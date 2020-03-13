@@ -46,8 +46,7 @@ public class SignSetup {
         if (IDSAE.isEmpty()) return;
 
         String header = "Temps d'attente";
-        String space_header = SignUtils.spaceSignString(90 - DefaultFontSignInfo.getStringSignLength(header));
-        sign.setLine(0, ChatColor.RED + header + space_header);
+        sign.setLine(0, ChatColor.RED + header);
 
         JsonCTS json = gson.fromJson(plugin.getHttpRequest().readUrl(IDSAE), JsonCTS.class);
         for (int i=0; i<json.ServiceDelivery.StopMonitoringDelivery[0].MonitoredStopVisit.length; i++) {
@@ -95,8 +94,9 @@ public class SignSetup {
             String time = getVehicleTime(json, i);
 
             String name2 = "";
-            if (DefaultFontSignInfo.isNotSignLineOverflow(type + " " + name)) {
-                List<String> strings = DefaultFontSignInfo.cutInSignLine(name);
+            if (DefaultFontSignInfo.isSignLineOverflow(type + " " + name)) {
+                System.out.println("mouais");
+                List<String> strings = DefaultFontSignInfo.cutInSignLine(name, DefaultFontSignInfo.getStringSignLength(type + " "));
                 name  = strings.get(0);
                 name2 = strings.get(1);
             }

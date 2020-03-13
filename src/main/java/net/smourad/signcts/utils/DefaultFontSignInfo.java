@@ -140,17 +140,18 @@ public enum DefaultFontSignInfo {
         return count;
     }
 
-    public static boolean isNotSignLineOverflow(String str) {
-        return getStringSignLength(str) > 90;
+    public static boolean isSignLineOverflow(String str) {
+        return getStringSignLength(str) > 88;
     }
 
-    public static List<String> cutInSignLine(String str) {
+    public static List<String> cutInSignLine(String str, int place_not_available) {
         StringBuilder builder = new StringBuilder();
         List<String> result = new ArrayList<>();
 
         int count = 0;
         for (char c : str.toCharArray()) {
-            if ((count += getDefaultFontSignInfo(c).getLength()) > 90) {
+            if ((count += getDefaultFontSignInfo(c).getLength()) > 90 - place_not_available) {
+                count = 0;
                 result.add(builder.toString());
                 builder = new StringBuilder();
             }
@@ -159,6 +160,7 @@ public enum DefaultFontSignInfo {
         }
 
         result.add(builder.toString());
+        System.out.println(result);
         return result;
     }
 }
