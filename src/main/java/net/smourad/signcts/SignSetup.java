@@ -40,9 +40,11 @@ public class SignSetup {
     }
 
     private void updateBusSign(CraftSign sign, Player player) throws Exception {
+        System.out.println("là");
         String IDSAE = sign.getLine(1);
 
         if (IDSAE.isEmpty()) return;
+        System.out.println("ici");
         String header = "Temps d'attente";
         String space_header = SignUtils.spaceSignString(90 - DefaultFontSignInfo.getStringSignLength(header));
         sign.setLine(0, ChatColor.RED + header + space_header);

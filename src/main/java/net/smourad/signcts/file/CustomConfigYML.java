@@ -43,7 +43,7 @@ public class CustomConfigYML {
         customConfigFile = new File(plugin.getDataFolder(), name + ".yml");
         if (!customConfigFile.exists()) {
             customConfigFile.getParentFile().mkdirs();
-            plugin.saveResource("custom.yml", false);
+            plugin.saveResource(name + ".yml", false);
         }
 
         customConfig = new YamlConfiguration();
