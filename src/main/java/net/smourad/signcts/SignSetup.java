@@ -116,7 +116,7 @@ public class SignSetup {
     }
 
     private String getTramTypeColorText(String type) {
-        return TramTypeColor.getTramTypeChatColor(type) + type;
+        return ChatColor.translateAlternateColorCodes('&', (String) plugin.getTramColor().get().get("ligne." + type)) + type;
     }
 
     private String getVehicleName(JsonCTS json , int i) {

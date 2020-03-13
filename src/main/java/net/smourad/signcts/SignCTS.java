@@ -1,8 +1,10 @@
 package net.smourad.signcts;
 
+import com.google.gson.Gson;
 import net.smourad.signcts.file.BusColorYML;
 import net.smourad.signcts.file.TramColorYML;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -14,6 +16,7 @@ import java.util.List;
 
 public class SignCTS extends JavaPlugin {
 
+    private Gson gson;
     private HttpRequest httpRequest;
     private TramColorYML tramColor;
     private BusColorYML busColor;
@@ -42,6 +45,8 @@ public class SignCTS extends JavaPlugin {
 
         tramColor.create();
         busColor.create();
+
+        tramColor.save();
     }
 
     private void loadConfig() {
@@ -89,5 +94,9 @@ public class SignCTS extends JavaPlugin {
 
     public BusColorYML getBusColor() {
         return busColor;
+    }
+
+    public Gson getGson() {
+        return gson;
     }
 }
