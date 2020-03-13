@@ -1,2 +1,2 @@
-token: INSERT TOKEN HERE
-url: https://api.cts-strasbourg.eu/v1/siri/2.0/stop-monitoring?MaximumStopVisits=3&MinimumStopVisitsPerLine=1&MonitoringRef=
+token: "INSERT TOKEN HERE"
+url: "https://api.cts-strasbourg.eu/v1/siri/2.0/stop-monitoring?MaximumStopVisits=3&MinimumStopVisitsPerLine=1&MonitoringRef="

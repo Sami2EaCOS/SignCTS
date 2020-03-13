@@ -17,6 +17,7 @@ import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class SignSetup {
@@ -50,9 +51,10 @@ public class SignSetup {
 
         JsonCTS json = gson.fromJson(plugin.getHttpRequest().readUrl(IDSAE), JsonCTS.class);
         for (int i=0; i<json.ServiceDelivery.StopMonitoringDelivery[0].MonitoredStopVisit.length; i++) {
-            String line = "Ligne " + getVehicleType(json, i);
+            String type = getVehicleType(json, i);
+            String line = "Ligne " + getBusTypeColorText(type);
             String time = getVehicleTime(json, i);
-            String space = SignUtils.spaceSignString(90 - DefaultFontSignInfo.getStringSignLength(line + time));
+            String space = SignUtils.spaceSignString(90 - DefaultFontSignInfo.getStringSignLength("Ligne " + type + time));
             sign.setLine(i+1, line + space + time);
         }
 
@@ -115,8 +117,14 @@ public class SignSetup {
         return json.ServiceDelivery.StopMonitoringDelivery[0].MonitoredStopVisit[i].MonitoredVehicleJourney.PublishedLineName;
     }
 
+    private String getBusTypeColorText(String type) {
+        return ChatColor.translateAlternateColorCodes('&',
+                (String) Objects.requireNonNull(plugin.getBusColor().get().get("ligne." + type))) + type + ChatColor.RESET;
+    }
+
     private String getTramTypeColorText(String type) {
-        return ChatColor.translateAlternateColorCodes('&', (String) plugin.getTramColor().get().get("ligne." + type)) + type;
+        return ChatColor.translateAlternateColorCodes('&',
+                (String) Objects.requireNonNull(plugin.getTramColor().get().get("ligne." + type))) + type + ChatColor.RESET;
     }
 
     private String getVehicleName(JsonCTS json , int i) {
@@ -131,34 +139,5 @@ public class SignSetup {
 
         long minutes = TimeUnit.MINUTES.convert(diffInMillies, TimeUnit.MILLISECONDS);
         return (minutes > 9 ? minutes : "0" + minutes) + " min";
-    }
-
-    private enum TramTypeColor {
-        A(ChatColor.RED),
-        B(ChatColor.AQUA),
-        C(ChatColor.GOLD),
-        D(ChatColor.DARK_GREEN),
-        E(ChatColor.LIGHT_PURPLE),
-        F(ChatColor.GREEN);
-
-        private final ChatColor color;
-
-        TramTypeColor(ChatColor color) {
-            this.color = color;
-        }
-
-        public ChatColor getColor() {
-            return color;
-        }
-
-        public static ChatColor getTramTypeChatColor(String type) {
-            for (TramTypeColor tramTypeColor : TramTypeColor.values()) {
-                if (tramTypeColor.name().equals(type)) {
-                    return tramTypeColor.getColor();
-                }
-            }
-
-            return ChatColor.RESET;
-        }
     }
 }
