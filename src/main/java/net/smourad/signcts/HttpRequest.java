@@ -10,16 +10,18 @@ public class HttpRequest {
 
     private final String url;
     private final String token;
+    private final String password;
 
-    public HttpRequest(final String url, final String token) {
+    public HttpRequest(final String url, final String token, final String password) {
         this.url = url;
         this.token = token;
+        this.password = password;
     }
 
     public String readUrl(String IDSAE) throws Exception {
         Authenticator.setDefault(new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(token, "".toCharArray());
+                return new PasswordAuthentication(token, password.toCharArray());
             }
         });
 

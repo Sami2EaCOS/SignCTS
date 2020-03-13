@@ -24,7 +24,10 @@ public class SignCTS extends JavaPlugin {
     @Override
     public void onEnable() {
         getLogger().info("Hello, SpigotMC!");
-        loadFiles();
+
+        loadConfigs();
+        connect();
+
         initSignLoop();
     }
 
@@ -37,33 +40,32 @@ public class SignCTS extends JavaPlugin {
         return httpRequest;
     }
 
-    private void loadFiles() {
-        loadConfig();
+    private void loadConfigs() {
+        saveDefaultConfig();
 
         tramColor = new TramColorYML(this);
-        busColor = new BusColorYML(this);
-
         tramColor.create();
-        busColor.create();
 
-        tramColor.save();
+        busColor = new BusColorYML(this);
+        busColor.create();
     }
 
-    private void loadConfig() {
-        saveDefaultConfig();
-        String webServiceToken = getConfig().getString("token");
-        String webServiceURL = getConfig().getString("url");
-        httpRequest = new HttpRequest(webServiceURL, webServiceToken);
+    private void connect() {
+        String webServiceToken = getConfig().getString("connection.token");
+        String webServiceURL = getConfig().getString("connection.url");
+        String password = getConfig().getString("connection.password");
+
+        httpRequest = new HttpRequest(webServiceURL, webServiceToken, password);
     }
 
     private void initSignLoop() {
         SignSetup signSetup = new SignSetup(this);
 
-        BukkitTask task = new BukkitRunnable() {
+        new BukkitRunnable() {
             @Override
             public void run() {
                 Bukkit.getOnlinePlayers().forEach(player -> {
-                    getNearbyBlocks(player.getLocation(), 40).forEach(block -> {
+                    getNearbyBlocks(player.getLocation(), (int) getConfig().get("display.range")).forEach(block -> {
                         try {
                             signSetup.sendPlayerSignChange(block, player);
                         } catch (Exception e) {
@@ -73,7 +75,7 @@ public class SignCTS extends JavaPlugin {
                 });
 
             }
-        }.runTaskTimer(this, 0L, 20L*10);
+        }.runTaskTimer(this, 0L, 20L * (int) getConfig().get("display.interval"));
     }
 
     private List<Block> getNearbyBlocks(Location location, int radius) {

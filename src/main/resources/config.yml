@@ -1,5 +1,11 @@
-token: "INSERT TOKEN HERE"
-url: "https://api.cts-strasbourg.eu/v1/siri/2.0/stop-monitoring?MaximumStopVisits=3&MinimumStopVisitsPerLine=1&MonitoringRef="
+connection:
+  token: "INSERT TOKEN HERE"
+  url: "https://api.cts-strasbourg.eu/v1/siri/2.0/stop-monitoring?MaximumStopVisits=3&MinimumStopVisitsPerLine=1&MonitoringRef="
+  password: ""
+
+display:
+  range: 50
+  interval: 10
 
 sign:
   color:

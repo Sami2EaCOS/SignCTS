@@ -3,7 +3,7 @@ package net.smourad.signcts;
 import com.google.gson.Gson;
 import net.minecraft.server.v1_15_R1.PacketPlayOutTileEntityData;
 import net.minecraft.server.v1_15_R1.PlayerConnection;
-import net.smourad.signcts.utils.DefaultFontSignInfo;
+import net.smourad.signcts.utils.DefaultSignFont;
 import net.smourad.signcts.utils.SignUtils;
 import net.smourad.signcts.utils.SimpleUtils;
 import org.bukkit.ChatColor;
@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 public class SignSetup {
 
     private SignCTS plugin;
-    private Gson gson = new Gson();
 
     public SignSetup(SignCTS plugin) {
         this.plugin = plugin;
@@ -48,12 +47,12 @@ public class SignSetup {
         String header = "Temps d'attente";
         sign.setLine(0, ChatColor.RED + header);
 
-        JsonCTS json = gson.fromJson(plugin.getHttpRequest().readUrl(IDSAE), JsonCTS.class);
+        JsonCTS json = plugin.getGson().fromJson(plugin.getHttpRequest().readUrl(IDSAE), JsonCTS.class);
         for (int i=0; i<json.ServiceDelivery.StopMonitoringDelivery[0].MonitoredStopVisit.length; i++) {
             String type = getVehicleType(json, i);
             String line = "Ligne " + getBusTypeColorText(type);
             String time = getVehicleTime(json, i);
-            String space = SignUtils.spaceSignString(90 - DefaultFontSignInfo.getStringSignLength("Ligne " + type + time));
+            String space = SignUtils.spaceSignString(90 - DefaultSignFont.getStringSignLength("Ligne " + type + time));
             sign.setLine(i+1, line + space + time);
         }
 
@@ -82,27 +81,26 @@ public class SignSetup {
         CraftSign sign2 = (CraftSign) block2.getState();
 
         String header_actual_time = SimpleUtils.getActualTime();
-        sign.setLine(0, ChatColor.RED + header_actual_time + SignUtils.spaceSignString(90 - DefaultFontSignInfo.getStringSignLength(header_actual_time)));
+        sign.setLine(0, ChatColor.RED + header_actual_time + SignUtils.spaceSignString(90 - DefaultSignFont.getStringSignLength(header_actual_time)));
 
         String header_time = "Temps d'attente";
-        sign2.setLine(0, SignUtils.spaceSignString(90 - DefaultFontSignInfo.getStringSignLength(header_time)) + ChatColor.RED + header_time);
+        sign2.setLine(0, SignUtils.spaceSignString(90 - DefaultSignFont.getStringSignLength(header_time)) + ChatColor.RED + header_time);
 
-        JsonCTS json = gson.fromJson(plugin.getHttpRequest().readUrl(IDSAE), JsonCTS.class);
+        JsonCTS json = plugin.getGson().fromJson(plugin.getHttpRequest().readUrl(IDSAE), JsonCTS.class);
         for (int i=0; i<Math.min(json.ServiceDelivery.StopMonitoringDelivery[0].MonitoredStopVisit.length, 3); i++) {
             String type = getVehicleType(json, i);
             String name = getVehicleName(json, i);
             String time = getVehicleTime(json, i);
 
             String name2 = "";
-            if (DefaultFontSignInfo.isSignLineOverflow(type + " " + name)) {
-                System.out.println("mouais");
-                List<String> strings = DefaultFontSignInfo.cutInSignLine(name, DefaultFontSignInfo.getStringSignLength(type + " "));
+            if (DefaultSignFont.isSignLineOverflow(type + " " + name)) {
+                List<String> strings = DefaultSignFont.cutInSignLine(name, DefaultSignFont.getStringSignLength(type + " "));
                 name  = strings.get(0);
                 name2 = strings.get(1);
             }
 
-            sign.setLine(i+1, getTramTypeColorText(type) + ChatColor.RESET + " " + name + SignUtils.spaceSignString(90 - DefaultFontSignInfo.getStringSignLength(type + " " + name)));
-            sign2.setLine(i+1, name2 + SignUtils.spaceSignString(90 - DefaultFontSignInfo.getStringSignLength(name2 + time)) + time);
+            sign.setLine(i+1, getTramTypeColorText(type) + ChatColor.RESET + " " + name + SignUtils.spaceSignString(90 - DefaultSignFont.getStringSignLength(type + " " + name)));
+            sign2.setLine(i+1, name2 + SignUtils.spaceSignString(90 - DefaultSignFont.getStringSignLength(name2 + time)) + time);
         }
 
         PacketPlayOutTileEntityData packet1 = new PacketPlayOutTileEntityData(sign.getBlock().getPosition(), 9, sign.getSnapshotNBT());

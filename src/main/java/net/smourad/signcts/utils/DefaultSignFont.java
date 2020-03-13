@@ -3,7 +3,7 @@ package net.smourad.signcts.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum DefaultFontSignInfo {
+public enum DefaultSignFont {
 
     A('A', 6),
     a('a', 6),
@@ -105,7 +105,7 @@ public enum DefaultFontSignInfo {
     private final char character;
     private final int length;
 
-    DefaultFontSignInfo(final char character, final int length) {
+    DefaultSignFont(final char character, final int length) {
         this.character = character;
         this.length = length;
     }
@@ -119,15 +119,15 @@ public enum DefaultFontSignInfo {
     }
 
     public int getBoldLength() {
-        return this == DefaultFontSignInfo.SPACE ? this.getLength() : this.getLength() + 1;
+        return this == DefaultSignFont.SPACE ? this.getLength() : this.getLength() + 1;
     }
 
-    public static DefaultFontSignInfo getDefaultFontSignInfo(char c) {
-        for (DefaultFontSignInfo dFI : DefaultFontSignInfo.values()) {
+    public static DefaultSignFont getDefaultFontSignInfo(char c) {
+        for (DefaultSignFont dFI : DefaultSignFont.values()) {
             if (dFI.getCharacter() == c) return dFI;
         }
 
-        return DefaultFontSignInfo.DEFAULT;
+        return DefaultSignFont.DEFAULT;
     }
 
     public static int getStringSignLength(String str) {
@@ -144,13 +144,17 @@ public enum DefaultFontSignInfo {
         return getStringSignLength(str) > 88;
     }
 
-    public static List<String> cutInSignLine(String str, int place_not_available) {
+    public static List<String> cutInSignLine(String str) {
+        return cutInSignLine(str, 0);
+    }
+
+    public static List<String> cutInSignLine(String str, int place_not_available_in_first_sign) {
         StringBuilder builder = new StringBuilder();
         List<String> result = new ArrayList<>();
 
         int count = 0;
         for (char c : str.toCharArray()) {
-            if ((count += getDefaultFontSignInfo(c).getLength()) > 90 - place_not_available) {
+            if ((count += getDefaultFontSignInfo(c).getLength()) > 90 - place_not_available_in_first_sign) {
                 count = 0;
                 result.add(builder.toString());
                 builder = new StringBuilder();
@@ -160,7 +164,6 @@ public enum DefaultFontSignInfo {
         }
 
         result.add(builder.toString());
-        System.out.println(result);
         return result;
     }
 }
