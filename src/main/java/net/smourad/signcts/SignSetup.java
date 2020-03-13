@@ -40,11 +40,10 @@ public class SignSetup {
     }
 
     private void updateBusSign(CraftSign sign, Player player) throws Exception {
-        System.out.println("là");
         String IDSAE = sign.getLine(1);
 
         if (IDSAE.isEmpty()) return;
-        System.out.println("ici");
+
         String header = "Temps d'attente";
         String space_header = SignUtils.spaceSignString(90 - DefaultFontSignInfo.getStringSignLength(header));
         sign.setLine(0, ChatColor.RED + header + space_header);
@@ -57,8 +56,10 @@ public class SignSetup {
             sign.setLine(i+1, line + space + time);
         }
 
+
         PacketPlayOutTileEntityData packet = new PacketPlayOutTileEntityData(sign.getBlock().getPosition(), 9, sign.getSnapshotNBT());
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+
     }
 
     private void updateTramSign(CraftSign sign, Player player) throws Exception {
@@ -74,7 +75,7 @@ public class SignSetup {
             blockFace = ((Sign) data).getRotation();
         }
 
-        Block block2 = sign.getWorld().getBlockAt(sign.getLocation().add(-blockFace.getModZ(), blockFace.getModY(), -blockFace.getModX()));
+        Block block2 = sign.getWorld().getBlockAt(sign.getLocation().add(blockFace.getModZ(), blockFace.getModY(), -blockFace.getModX()));
 
         if (!SignUtils.isSign(block2.getType())) return;
         CraftSign sign2 = (CraftSign) block2.getState();
