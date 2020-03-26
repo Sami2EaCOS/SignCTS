@@ -1,5 +1,7 @@
 package net.smourad.signcts.utils;
 
+import org.bukkit.ChatColor;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,6 +134,8 @@ public enum DefaultSignFont {
 
     public static int getStringSignLength(String str) {
         int count = 0;
+
+        str = ChatColor.stripColor(str);
 
         for (char c : str.toCharArray()) {
             count += getDefaultFontSignInfo(c).getLength();

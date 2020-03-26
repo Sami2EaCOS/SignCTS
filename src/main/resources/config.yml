@@ -9,5 +9,5 @@ display:
 
 sign:
   color:
-    header: "&a"
     time: "&a"
+    waiting: "&a"

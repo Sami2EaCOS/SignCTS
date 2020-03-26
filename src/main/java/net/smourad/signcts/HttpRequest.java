@@ -1,7 +1,9 @@
 package net.smourad.signcts;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import java.io.*;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URL;
@@ -19,11 +21,7 @@ public class HttpRequest {
     }
 
     public String readUrl(String IDSAE) throws Exception {
-        Authenticator.setDefault(new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(token, password.toCharArray());
-            }
-        });
+        authentication();
 
         StringBuilder out = new StringBuilder();
         BufferedReader in = new BufferedReader(new InputStreamReader(new URL(url + IDSAE).openStream(), "UTF8"));
@@ -36,5 +34,18 @@ public class HttpRequest {
         in.close();
         return out.toString();
     }
+
+    public JsonObject readJsonFromUrl(String IDSAE) throws Exception {
+        return new JsonParser().parse(readUrl(IDSAE)).getAsJsonObject();
+    }
+
+    private void authentication() {
+        Authenticator.setDefault(new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(token, password.toCharArray());
+            }
+        });
+    }
+
 }
 

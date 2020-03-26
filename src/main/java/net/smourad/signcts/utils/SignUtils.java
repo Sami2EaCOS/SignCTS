@@ -1,6 +1,8 @@
 package net.smourad.signcts.utils;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_15_R1.block.CraftSign;
 
 public class SignUtils {
 
@@ -27,5 +29,23 @@ public class SignUtils {
         }
 
         return builder.toString();
+    }
+
+    public static String toFillWithSpace(String str) {
+        return spaceSignString(90 - DefaultSignFont.getStringSignLength(ChatColor.stripColor(str)));
+    }
+
+    public static String fillWithSpaceOnRight(String str) {
+        return str + spaceSignString(90 - DefaultSignFont.getStringSignLength(ChatColor.stripColor(str)));
+    }
+
+    public static String fillWithSpaceOnLeft(String str) {
+        return spaceSignString(90 - DefaultSignFont.getStringSignLength(ChatColor.stripColor(str))) + str;
+    }
+
+    public static void cleanSign(CraftSign sign) {
+        for (int i=0; i<4; ++i) {
+            sign.setLine(i, " ");
+        }
     }
 }
