@@ -22,8 +22,7 @@ public class DualSign extends SimpleSign {
     private CraftSign sign;
     private CraftSign sign2;
 
-    public DualSign(SignCTS plugin, CraftSign sign) {
-        super(plugin);
+    public DualSign(CraftSign sign) {
         this.sign = sign;
         this.sign2 = getDuet();
     }
@@ -50,9 +49,16 @@ public class DualSign extends SimpleSign {
 
         String idsae = sign.getLine(1);
         SignUtils.cleanSign(sign);
+        SignUtils.cleanSign(sign2);
         updateHeader();
 
-        SignInfoAnalyzer info = new SignInfoAnalyzer(getPlugin(), idsae);
+        SignInfoAnalyzer info = SignCTS.getInstance().getDetector().getUpdater().getSignInfo(idsae);
+
+        if (!info.havePlannedVisit() || info.getMonitoredStopVisitLength() == 0) {
+            sign .setLine(2, SignUtils.fillWithSpaceOnLeft(ChatColor.RED + "Pas de"));
+            sign2.setLine(2, SignUtils.fillWithSpaceOnRight(ChatColor.RED + "passage"));
+            return;
+        }
 
         for (int i=0; i < Math.min(info.getMonitoredStopVisitLength(), 3); i++) {
             MonitoredStopVisitInfo stop = info.getMonitoredStopVisit(i);
@@ -78,8 +84,8 @@ public class DualSign extends SimpleSign {
         String time = SimpleUtils.getActualTime();
         String waiting = "Temps d'attente";
 
-        sign .setLine(0, SignUtils.fillWithSpaceOnRight(ChatColor.translateAlternateColorCodes('&', (String) getPlugin().getConfig().get("sign.color.time")) + time));
-        sign2.setLine(0, SignUtils.fillWithSpaceOnLeft (ChatColor.translateAlternateColorCodes('&', (String) getPlugin().getConfig().get("sign.color.waiting")) + waiting));
+        sign .setLine(0, SignUtils.fillWithSpaceOnRight(ChatColor.translateAlternateColorCodes('&', (String) SignCTS.getInstance().getConfig().get("sign.color.time")) + time));
+        sign2.setLine(0, SignUtils.fillWithSpaceOnLeft (ChatColor.translateAlternateColorCodes('&', (String) SignCTS.getInstance().getConfig().get("sign.color.waiting")) + waiting));
     }
 
     private void missingSignText() {

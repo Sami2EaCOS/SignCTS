@@ -12,8 +12,7 @@ public class MonoSign extends SimpleSign {
 
     private CraftSign sign;
 
-    public MonoSign(SignCTS plugin, CraftSign sign) {
-        super(plugin);
+    public MonoSign(CraftSign sign) {
         this.sign = sign;
     }
 
@@ -28,7 +27,12 @@ public class MonoSign extends SimpleSign {
         SignUtils.cleanSign(sign);
         updateHeader();
 
-        SignInfoAnalyzer info = new SignInfoAnalyzer(getPlugin(), idsae);
+        SignInfoAnalyzer info = SignCTS.getInstance().getDetector().getUpdater().getSignInfo(idsae);
+
+        if (!info.havePlannedVisit() || info.getMonitoredStopVisitLength() == 0) {
+            sign.setLine(2, ChatColor.RED + "Pas de passage");
+            return;
+        }
 
         for (int i=0; i < Math.min(info.getMonitoredStopVisitLength(), 3); i++) {
             MonitoredStopVisitInfo stop = info.getMonitoredStopVisit(i);
@@ -42,6 +46,6 @@ public class MonoSign extends SimpleSign {
 
     protected void updateHeader() {
         String waiting = "Temps d'attente";
-        sign.setLine(0, ChatColor.translateAlternateColorCodes('&', (String) getPlugin().getConfig().get("sign.color.waiting")) + waiting);
+        sign.setLine(0, ChatColor.translateAlternateColorCodes('&', (String) SignCTS.getInstance().getConfig().get("sign.color.waiting")) + waiting);
     }
 }

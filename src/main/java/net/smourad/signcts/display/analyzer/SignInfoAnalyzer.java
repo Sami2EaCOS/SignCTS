@@ -7,19 +7,27 @@ import net.smourad.signcts.SignCTS;
 public class SignInfoAnalyzer {
 
     private JsonObject info;
-    private SignCTS plugin;
+    private String idsae;
 
-    public SignInfoAnalyzer(SignCTS plugin, String idsae) throws Exception {
-        this.plugin = plugin;
-        this.info = plugin.getHttpRequest().readJsonFromUrl(idsae);
+    public SignInfoAnalyzer(String idsae) {
+        this.idsae = idsae;
+        this.info = null;
+    }
+
+    public void update() throws Exception {
+        this.info = SignCTS.getInstance().getHttpRequest().readJsonFromUrl(idsae);
     }
 
     public MonitoredStopVisitInfo getMonitoredStopVisit(int i) {
-        return new MonitoredStopVisitInfo(plugin, getMonitoredStopVisitArray().get(i).getAsJsonObject());
+        return new MonitoredStopVisitInfo(SignCTS.getInstance(), getMonitoredStopVisitArray().get(i).getAsJsonObject());
     }
 
     public int getMonitoredStopVisitLength() {
         return getMonitoredStopVisitArray().size();
+    }
+
+    public boolean havePlannedVisit() {
+        return info != null || getMonitoredStopVisitArray() != null;
     }
 
     private JsonArray getMonitoredStopVisitArray() {

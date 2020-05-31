@@ -48,8 +48,7 @@ public class MonitoredStopVisitInfo {
         if (color != null) {
             return ChatColor.translateAlternateColorCodes('&',  color) + line + ChatColor.RESET;
         } else {
-            System.out.print(line);
-            return line + ChatColor.RESET;
+            return line;
         }
 
     }

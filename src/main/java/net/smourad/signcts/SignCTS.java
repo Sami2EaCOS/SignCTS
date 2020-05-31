@@ -1,8 +1,11 @@
 package net.smourad.signcts;
 
 import net.smourad.signcts.display.SignDetector;
+import net.smourad.signcts.event.PlayerJoinSignUpdate;
+import net.smourad.signcts.event.shovel.RightClickWithHolyShovel;
 import net.smourad.signcts.file.BusColorYML;
 import net.smourad.signcts.file.TramColorYML;
+import net.smourad.signcts.utils.HttpRequest;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SignCTS extends JavaPlugin {
@@ -16,16 +19,18 @@ public class SignCTS extends JavaPlugin {
     private HttpRequest httpRequest;
     private TramColorYML tramColor;
     private BusColorYML busColor;
+    private SignDetector detector;
 
     @Override
     public void onEnable() {
         instance = this;
 
         loadConfigs();
+        loadListener();
+
         connect();
 
-        SignDetector detector = new SignDetector(this);
-        detector.init();
+        detector = new SignDetector();
     }
 
     @Override
@@ -53,6 +58,11 @@ public class SignCTS extends JavaPlugin {
         httpRequest = new HttpRequest(webServiceURL, webServiceToken, password);
     }
 
+    private void loadListener() {
+        getServer().getPluginManager().registerEvents(new RightClickWithHolyShovel(), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinSignUpdate(), this);
+    }
+
     public TramColorYML getTramColor() {
         return tramColor;
     }
@@ -61,4 +71,7 @@ public class SignCTS extends JavaPlugin {
         return busColor;
     }
 
+    public SignDetector getDetector() {
+        return detector;
+    }
 }

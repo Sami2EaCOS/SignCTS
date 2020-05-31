@@ -5,6 +5,9 @@ connection:
 
 display:
   range: 50
+  interval: 5
+
+update:
   interval: 10
 
 sign:

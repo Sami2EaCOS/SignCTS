@@ -1,46 +1,51 @@
 package net.smourad.signcts.display;
 
 import net.smourad.signcts.SignCTS;
+import net.smourad.signcts.display.analyzer.SignInfoUpdater;
 import net.smourad.signcts.display.sign.DualSign;
 import net.smourad.signcts.display.sign.MonoSign;
 import net.smourad.signcts.display.sign.SimpleSign;
+import net.smourad.signcts.utils.SimpleUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_15_R1.block.CraftSign;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SignDetector {
 
-    private SignCTS plugin;
+    private SignInfoUpdater updater;
 
-    public SignDetector(SignCTS plugin) {
-        this.plugin = plugin;
+    public SignDetector() {
+        init();
+        updater = new SignInfoUpdater();
     }
 
-    public void init() {
+    private void init() {
+        Map<CraftSign, SimpleSign> loaded = new HashMap<>();
+
         new BukkitRunnable() {
             @Override
             public void run() {
-                Map<Block, SimpleSign> loaded = new HashMap<>();
+                loaded.clear();
+                int range = (int) SignCTS.getInstance().getConfig().get("display.range");
 
                 Bukkit.getOnlinePlayers().forEach(player -> {
-                    getNearbyBlocks(player.getLocation(), (int) plugin.getConfig().get("display.range")).forEach(block -> {
-                        if (loaded.containsKey(block)) {
-                            loaded.get(block).displayToPlayer(player);
-                        } else {
-                            SimpleSign sign = checkAndSetup(block);
+                    SimpleUtils.getNearbyBlocks(player.getLocation(), range).stream().filter(block -> block.getState() instanceof CraftSign).forEach(block -> {
+                        CraftSign sign = (CraftSign) block.getState();
 
-                            if (sign != null) {
-                                loaded.put(block, sign);
+                        if (loaded.containsKey(sign)) {
+                            loaded.get(sign).displayToPlayer(player);
+                        } else {
+                            SimpleSign s = checkAndSetup(sign);
+
+                            if (s != null) {
+                                loaded.put(sign, s);
                                 try {
-                                    sign.updateText();
-                                    sign.displayToPlayer(player);
+                                    s.updateText();
+                                    s.displayToPlayer(player);
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -48,32 +53,15 @@ public class SignDetector {
                         }
                     });
                 });
-
             }
-        }.runTaskTimer(plugin, 0L, 20L * (int) plugin.getConfig().get("display.interval"));
+        }.runTaskTimer(SignCTS.getInstance(), 0L, 20L * SignCTS.getInstance().getConfig().getInt("display.interval"));
     }
 
-    private SimpleSign checkAndSetup(Block block) {
-        if (block.getState() instanceof CraftSign) {
-            CraftSign sign = (CraftSign) block.getState();
-            if (sign.getLine(0).equals("[CTS]")) {
-                return sign.getLine(2).equalsIgnoreCase("double") ? new DualSign(plugin, sign) : new MonoSign(plugin, sign);
-            }
-        }
-
-        return null;
+    private SimpleSign checkAndSetup(CraftSign sign) {
+        return sign.getLine(0).equals("[CTS]") ? sign.getLine(2).equalsIgnoreCase("double") ? new DualSign(sign) : new MonoSign(sign) : null;
     }
 
-    private List<Block> getNearbyBlocks(Location location, int radius) {
-        List<Block> blocks = new ArrayList<>();
-        for(int x = location.getBlockX() - radius; x <= location.getBlockX() + radius; x++) {
-            for(int y = location.getBlockY() - radius; y <= location.getBlockY() + radius; y++) {
-                for(int z = location.getBlockZ() - radius; z <= location.getBlockZ() + radius; z++) {
-                    blocks.add(location.getWorld().getBlockAt(x, y, z));
-                }
-            }
-        }
-
-        return blocks;
+    public SignInfoUpdater getUpdater() {
+        return updater;
     }
 }
